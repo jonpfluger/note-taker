@@ -4,16 +4,11 @@ const express = require('express')
 const app = express()
 const port = 1337
 
-const notesData = require('./db/db.json')
+let notesData = require('./db/db.json')
 
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
 app.use(express.json())
-
-
-
-
-
 
 
 // API routes
@@ -22,7 +17,6 @@ app.use(express.json())
 app.get('/api/notes', (req, res) => {
     res.json(notesData)
 })
-
 
 // post request for saveNote
 app.post('/api/notes', (req, res) => {
@@ -34,7 +28,8 @@ app.post('/api/notes', (req, res) => {
     }
 
     const newNote = {
-        ...req.body
+        ...req.body,
+        id: Math.random()
     }
 
     // read contents of db.json
@@ -58,12 +53,35 @@ app.post('/api/notes', (req, res) => {
     })
 })
 
-
 // delete request for deleteNote
-app.delete('/api/notes', (req, res) => {
+app.delete('/api/notes/:id', (req, res) => {
 
+    // read all notes from the db.json file
+    fs.readFile(path.join(__dirname, "db", "db.json"), "utf-8", function(err, data) {
+
+        const { id } = req.params
+
+        const deletedNote = notesData.find(note => note.id === id)
+
+        // remove the note with the given id property
+        if (!deletedNote) {
+            res.status(404).json({ "message": "Not found." })
+        } else {
+            notesData = notesData.filter(note => note.id !== id)
+        }
+    
+
+
+        // rewrite the notes to the db.json file
+        fs.writeFile(path.join(__dirname, 'db', 'db.json'), JSON.stringify(notesData), function (err) {
+            if (err) {
+                res.status(500).json(err)
+                return
+            }
+            res.json(notesData)
+        })
+    })
 })
-
 
 
 // view (html) routes
@@ -73,6 +91,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"))
 })
 
+// Notes route
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, "public", "notes.html"))
 })
