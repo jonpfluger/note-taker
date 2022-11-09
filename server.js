@@ -24,7 +24,7 @@ app.get('/api/notes', (req, res) => {
 })
 
 
-// save request for saveNote
+// post request for saveNote
 app.post('/api/notes', (req, res) => {
     const { title, text } = req.body
 
@@ -38,7 +38,7 @@ app.post('/api/notes', (req, res) => {
     }
 
     // read contents of db.json
-    fs.readFile(path.join(__dirname, 'db', 'db.json', 'utf8', function(err, data) {
+    fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf-8', function(err, data) {
         if (err) {
             res.status(500).json(err)
             return
@@ -47,15 +47,15 @@ app.post('/api/notes', (req, res) => {
         const notesData = JSON.parse(data)
         // push our new note into json
         notesData.push(newNote)
-        // save stringify notes array and save file
-        fs.writeFile(path.join(__dirname, 'db', 'db.json', 'utf8', JSON.stringify(notesData), function (err) {
+        // stringify notes array and save file
+        fs.writeFile(path.join(__dirname, 'db', 'db.json'), JSON.stringify(notesData), function (err) {
             if (err) {
                 res.status(500).json(err)
                 return
             }
             res.status(200).json(newNote)
-        }))
-    }))
+        })
+    })
 })
 
 
