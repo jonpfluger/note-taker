@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const port = 1337
 
-// const notesData = require('./db/db.json')
+const notesData = require('./db/db.json')
 
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
@@ -16,9 +16,13 @@ app.use(express.static('public'))
 
 // API routes
 
+// get request for getNotes
+app.get('/api/notes', (req, res) => {
+    res.json(notesData)
+})
 
-// =======================================================================================================
 
+// save request for saveNote
 app.post('/api/notes', (req, res) => {
     // read contents of db.json
     fs.readFile(path.join(__dirname, 'db', 'db.json', 'utf8', function(err, data) {
@@ -41,13 +45,14 @@ app.post('/api/notes', (req, res) => {
     }))
 })
 
-// ======================================================================================================
+
+// delete request for deleteNote
 
 
 
 
 
-
+// view (html) routes
 
 // Home route
 app.get('/', (req, res) => {
