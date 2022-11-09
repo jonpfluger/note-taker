@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const app = express()
@@ -7,6 +8,7 @@ const notesData = require('./db/db.json')
 
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
+app.use(express.json())
 
 
 
@@ -24,6 +26,17 @@ app.get('/api/notes', (req, res) => {
 
 // save request for saveNote
 app.post('/api/notes', (req, res) => {
+    const { title, text } = req.body
+
+    if (!title || !text) {
+        res.status(400).json({ error: "Missing title and/or text." })
+        return
+    }
+
+    const newNote = {
+        ...req.body
+    }
+
     // read contents of db.json
     fs.readFile(path.join(__dirname, 'db', 'db.json', 'utf8', function(err, data) {
         if (err) {
@@ -35,20 +48,21 @@ app.post('/api/notes', (req, res) => {
         // push our new note into json
         notesData.push(newNote)
         // save stringify notes array and save file
-        fs.writeFile(path.join(__dirname, 'db', 'db.json', 'utf8', JSON.stringify(animalData), function (err) {
+        fs.writeFile(path.join(__dirname, 'db', 'db.json', 'utf8', JSON.stringify(notesData), function (err) {
             if (err) {
                 res.status(500).json(err)
                 return
             }
-            res.status(200).json(newAnimal)
+            res.status(200).json(newNote)
         }))
     }))
 })
 
 
 // delete request for deleteNote
+app.delete('/api/notes', (req, res) => {
 
-
+})
 
 
 
