@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const app = express()
-const port = 1337
+const port = process.env.PORT || 1337
 
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
