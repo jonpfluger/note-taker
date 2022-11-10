@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const port = 1337
 
-let notesData = require('./db/db.json')
+// let notesData = require('./db/db.json')
 
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
@@ -15,7 +15,9 @@ app.use(express.json())
 
 // get request for getNotes
 app.get('/api/notes', (req, res) => {
-    res.json(notesData)
+    fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf-8', function(err, data) {
+        res.json(JSON.parse(data))
+    })
 })
 
 // post request for saveNote
@@ -60,15 +62,18 @@ app.delete('/api/notes/:id', (req, res) => {
     fs.readFile(path.join(__dirname, "db", "db.json"), "utf-8", function(err, data) {
 
         const { id } = req.params
-
-        const deletedNote = notesData.find(note => note.id === id)
-
+        let notesData = JSON.parse(data)
+        // console.log(notesData)
+        const deletedNote = notesData.find(note => note.id == id)
+        console.log("Deleted Note: ", deletedNote)
         // remove the note with the given id property
         if (!deletedNote) {
             res.status(404).json({ "message": "Not found." })
+            return
         } else {
-            notesData = notesData.filter(note => note.id !== id)
+            notesData = notesData.filter(note => note.id != id)
         }
+        console.log("Notes Data: ", notesData)
     
 
 
