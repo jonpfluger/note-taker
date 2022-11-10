@@ -14,6 +14,10 @@ app.use(express.json())
 // get request for getNotes
 app.get('/api/notes', (req, res) => {
     fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf-8', function(err, data) {
+        if (err) {
+            res.status(500).json({ error: "error" })
+            return
+        }
         res.json(JSON.parse(data))
     })
 })
@@ -57,6 +61,10 @@ app.post('/api/notes', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
     // read all notes from the db.json file
     fs.readFile(path.join(__dirname, "db", "db.json"), "utf-8", function(err, data) {
+        if (err) {
+            res.status(500).json(err)
+            return
+        }
         const { id } = req.params
         let notesData = JSON.parse(data)
         const deletedNote = notesData.find(note => note.id == id)
