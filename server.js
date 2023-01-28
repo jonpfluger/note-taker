@@ -7,7 +7,7 @@ const port = process.env.PORT || 1337
 // unblock static folder so browser can request resources
 app.use(express.static('public'))
 app.use(express.json())
-
+app.use(express.urlencoded({extended: true}))
 
 // API routes
 
